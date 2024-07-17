@@ -8,6 +8,7 @@ use App\Models\Devices;
 use App\Helpers\ApiHelpers;
 use App\Models\DevicesSensors;
 use App\Http\Controllers\Controller;
+use App\Notifications\SensorWarning;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,6 +39,10 @@ class DevicesSensorsController extends Controller
             ];
 
             $data = $devices->sensor()->create($validated);
+            if ($request->input('temperature') > 30) {
+                $user = Auth::user();
+                $user->notify(new SensorWarning);
+            }
 
             return ApiHelpers::success($data, 'Berhasil mengirim data!');
         } catch (Exception $e) {
