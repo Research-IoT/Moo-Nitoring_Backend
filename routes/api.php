@@ -2,8 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UsersController;
+
 use App\Http\Controllers\Api\DevicesController;
+use App\Http\Controllers\Api\OpenWeatherConfigController;
+use App\Http\Controllers\Api\DevicesDashboardController;
 use App\Http\Controllers\Api\DevicesSensorsController;
+use App\Http\Controllers\Api\NotificationsController;
+use App\Http\Controllers\DevicesDashboardController as ControllersDevicesDashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,8 +30,6 @@ Route::prefix('/v1')->group(function () {
         ]);
     })->name('v1.home');
 
-    Route::get('/fcm', [UsersController::class, 'toFcm']);
-
     Route::prefix('users')->controller(UsersController::class)->group(function(){
         Route::post('/register', 'register');
         Route::post('/login', 'login');
@@ -39,7 +42,7 @@ Route::prefix('/v1')->group(function () {
 
     Route::prefix('/devices')->controller(DevicesController::class)->group(function() {
         Route::middleware(['auth:sanctum', 'abilities:users'])->group(function () {
-            Route::get('/', [DevicesController::class, 'index']);
+            Route::get('/list', [DevicesController::class, 'list']);
             Route::post('/register', [DevicesController::class, 'register']);
             Route::post('/renew', [DevicesController::class, 'renew']);
             Route::get('/details', [DevicesController::class, 'details']);
@@ -53,10 +56,25 @@ Route::prefix('/v1')->group(function () {
 
         Route::prefix('/sensor')->controller(DevicesSensorsController::class)->group(function(){
             Route::post('/add', 'add')->middleware(['auth:sanctum', 'abilities:devices']);
-            Route::get('/data-by-id', 'data_by_id')->middleware(['auth:sanctum', 'abilities:users']);
+            Route::get('/data-by-id', 'byId')->middleware(['auth:sanctum', 'abilities:users']);
             Route::get('/data-by-day', 'byDay')->middleware(['auth:sanctum', 'abilities:users']);
-            Route::get('/data-by-summary', 'data_by_summary')->middleware(['auth:sanctum', 'abilities:users']);
+            Route::get('/data-by-summary', 'bySummary')->middleware(['auth:sanctum', 'abilities:users']);
             Route::get('/current', 'current')->middleware(['auth:sanctum', 'abilities:users']);
         });
+    });
+
+    Route::prefix('/notifications')->controller(NotificationsController::class)->group(function() {
+        Route::get('/list', [NotificationsController::class, 'list'])->middleware(['auth:sanctum', 'abilities:users']);
+    });
+
+
+    Route::prefix('/dashboard')->controller(DevicesDashboardController::class)->group(function () {
+        Route::post('/update', [DevicesDashboardController::class, 'update'])->middleware(['auth:sanctum', 'abilities:devices']);
+        Route::get('/info', [DevicesDashboardController::class, 'info'])->middleware(['auth:sanctum', 'abilities:users']);
+    });
+
+    Route::prefix('/open-weather-token')->controller(OpenWeatherConfigController::class)->middleware(['auth:sanctum', 'abilities:users'])->group(function() {
+            Route::get('/show', [OpenWeatherConfigController::class, 'show']);
+            Route::post('/add', [OpenWeatherConfigController::class, 'add']);
     });
 });
