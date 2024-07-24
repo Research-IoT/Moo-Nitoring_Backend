@@ -7,7 +7,7 @@ use Exception;
 use App\Models\Devices;
 use App\Helpers\ApiHelpers;
 use App\Http\Controllers\Controller;
-
+use App\Models\DevicesDashboard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Validator;
 class DevicesController extends Controller
 {
 
-    public function index(Request $request)
+    public function list(Request $request)
     {
         try{
             $users = Auth::check();
@@ -46,31 +46,39 @@ class DevicesController extends Controller
                 return ApiHelpers::badRequest([], 'Token tidak ditemukan, atau tidak sesuai!', 403);
             }
 
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:125',
-                'automatic' => 'required|boolean',
-                'heater' => 'required|boolean',
-                'blower' => 'required|boolean'
-            ]);
+            $validator = [
+                'name' => $request->input('name'),
+                'automatic' => true,
+                'heater' => false,
+                'blower' => false
+            ];
 
-            if ($validator->fails()) {
-                return ApiHelpers::badRequest($validator->errors(), 'Ada data yang tidak valid!', 403);
+            if(!$validator['name'])
+            {
+                return ApiHelpers::badRequest([], 'Nama Device tidak boleh kosong!', 400);
             }
 
-            $validated = $validator->validated();
-
-            $existingDevice = Devices::where('name', $validated['name'])->first();
+            $existingDevice = Devices::where('name', $validator['name'])->first();
             if ($existingDevice) {
                 return ApiHelpers::badRequest([], 'Device dengan nama tersebut sudah terdaftar!', 400);
             }
 
-            Devices::create($validated);
-            event(new Registered($validated));
+            Devices::create($validator);
+            event(new Registered($validator));
 
-            $device = Devices::where('name', $validated['name'])->first();
+            $device = Devices::where('name', $validator['name'])->first();
             if (!$device) {
                 return ApiHelpers::badRequest([], 'Device tidak ditemukan setelah pendaftaran!', 500);
             }
+
+            DevicesDashboard::create([
+                'devices_id' => $device->id,
+                'temperature' => '0',
+                'humidity' => '0',
+                'ammonia' => '0',
+                'time' => ''
+            ]);
+
 
             $token = $device->createToken($request->name, ['devices'])->plainTextToken;
 
@@ -140,7 +148,14 @@ class DevicesController extends Controller
             }
 
             $devices_id = $request->header('device_id');
-            $data = Devices::findOrFail($devices_id);
+
+            $devices = Devices::findOrFail($devices_id);
+            $dashboard = DevicesDashboard::where('devices_id', $devices_id)->first();
+
+            $data = [
+                'devices' => $devices,
+                'dashboard' => $dashboard
+            ];
 
             return ApiHelpers::ok($data, 'Ini adalah Detail Devices!');
         } catch (Exception $e) {
