@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Models\Devices;
 
 return new class extends Migration
 {
@@ -11,12 +12,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('devices', function (Blueprint $table) {
+        Schema::create('devices_dashboard', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->boolean('automatic');
-            $table->boolean('heater');
-            $table->boolean('blower');
+            $table->foreignIdFor(Devices::class)->constrained();
+            $table->string('temperature');
+            $table->string('humidity');
+            $table->string('ammonia');
+            $table->string('time');
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('devices');
+        Schema::dropIfExists('devices_dashboard');
     }
 };
