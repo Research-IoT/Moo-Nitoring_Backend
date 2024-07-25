@@ -8,7 +8,6 @@ use App\Http\Controllers\Api\OpenWeatherConfigController;
 use App\Http\Controllers\Api\DevicesDashboardController;
 use App\Http\Controllers\Api\DevicesSensorsController;
 use App\Http\Controllers\Api\NotificationsController;
-use App\Http\Controllers\DevicesDashboardController as ControllersDevicesDashboardController;
 
 /*
 |--------------------------------------------------------------------------
