@@ -48,7 +48,7 @@ Route::prefix('/v1')->group(function () {
         });
 
         Route::prefix('/controller')->group(function(){  
-            Route::get('/current-users', [DevicesController::class, 'current_users'])->middleware(['auth:sanctum', 'abilities:devices']);
+            Route::get('/current-users', [DevicesController::class, 'current_users'])->middleware(['auth:sanctum', 'abilities:users']);
             Route::get('/current-devices', [DevicesController::class, 'current_devices'])->middleware(['auth:sanctum', 'abilities:devices']);
             Route::post('/changes', [DevicesController::class, 'changes'])->middleware(['auth:sanctum', 'abilities:users']);
         });
