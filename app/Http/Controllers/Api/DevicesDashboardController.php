@@ -6,7 +6,6 @@ use Exception;
 
 use App\Helpers\ApiHelpers;
 
-use App\Models\Devices;
 use App\Models\DevicesDashboard;
 
 use App\Http\Controllers\Controller;

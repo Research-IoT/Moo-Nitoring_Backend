@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Validator;
 
+use function PHPSTORM_META\map;
+
 class DevicesController extends Controller
 {
 
@@ -29,7 +31,24 @@ class DevicesController extends Controller
 
             $devices = Devices::all();
 
-            return ApiHelpers::ok($devices, 'Berhasil mengambil seluruh data Devices!');
+            $data = $devices->map(function ($device) {
+                $dashboard = DevicesDashboard::where('devices_id', $device->id)->first();
+                return [
+                    'id' => $device['id'],
+                    'name' => $device['name'],
+                    'automatic' => $device['automatic'],
+                    'heater' => $device['heater'],
+                    'blower' => $device['blower'],
+                    'dashboard' => [
+                        'temperature' => $dashboard['temperature'],
+                        'humidity' => $dashboard['humidity'],
+                        'ammonia' => $dashboard['ammonia'],
+                        'time' => $dashboard['time']
+                    ]
+                ];
+            });
+
+            return ApiHelpers::ok($data, 'Berhasil mengambil seluruh data Devices!');
         } catch (Exception $e) {
             Log::error($e);
             return ApiHelpers::internalServer($e, 'Terjadi Kesalahan');

@@ -13,23 +13,29 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Validator;
 
 class OpenWeatherConfigController extends Controller
 {
-    public function show()
+    public function info()
     {
         try {
+            $users = Auth::check();
+
+            if(!$users)
+            {
+                return ApiHelpers::badRequest([], 'Token tidak ditemukan, atau tidak sesuai!', 403);
+            }
+
             $data = OpenWeatherConfig::orderBy('created_at', 'desc')->first();
             
-            if (!$data) {
+            if ($data->isEmpty()) {
                 return ApiHelpers::badRequest('Data tidak ditemukan');
             }
 
             $data = [
                 'api_key' => $data['api_key']
-        ];
+            ];
 
             return ApiHelpers::ok($data, 'Berhasil API Key Open Weather!');
         } catch (Exception $e) {

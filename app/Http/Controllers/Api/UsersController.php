@@ -6,19 +6,16 @@ use Exception;
 
 use App\Models\Users;
 use App\Helpers\ApiHelpers;
+
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
-
-use NotificationChannels\Fcm\FcmChannel;
-use NotificationChannels\Fcm\FcmMessage;
-use NotificationChannels\Fcm\Resources\Notification as FcmNotification;
 
 class UsersController extends Controller
 {
@@ -132,30 +129,5 @@ class UsersController extends Controller
             Log::error($e);
             return ApiHelpers::internalServer($e, 'Terjadi Kesalahan');
         }
-    }
-
-    public function via($notifiable)
-    {
-        return [FcmChannel::class];
-    }
-
-    public function toFcm(): FcmMessage
-    {
-        return (new FcmMessage(notification: new FcmNotification(
-            title: 'Account Activated',
-            body: 'Your account has been activated.'
-        )))
-//            ->data(['data1' => 'value', 'data2' => 'value2'])
-//            ->custom([
-//                'android' => [
-//                    'notification' => [
-//                        'color' => '#0A0A0A',
-//                    ],
-//                    'fcm_options' => [
-//                        'analytics_label' => 'analytics',
-//                    ],
-//                ],
-//        ])
-            ;
     }
 }
