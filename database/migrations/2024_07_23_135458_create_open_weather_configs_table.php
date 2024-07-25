@@ -11,12 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('devices', function (Blueprint $table) {
+        Schema::create('open_weather_configs', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->boolean('automatic');
-            $table->boolean('heater');
-            $table->boolean('blower');
+            $table->string('api_key');
             $table->timestamps();
         });
     }
@@ -26,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('devices');
+        Schema::dropIfExists('open_weather_configs');
     }
 };
