@@ -257,9 +257,9 @@ class DevicesController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'id' => 'required|integer',
-                'automatic' => 'required|boolean',
-                'heater' => 'required|boolean',
-                'blower' => 'required|boolean'
+                'automatic' => 'required|in:0,1,true,false',
+                'heater' => 'required|in:0,1,true,false',
+                'blower' => 'required|in:0,1,true,false'
             ]);
 
             if ($validator->fails()) {
@@ -267,6 +267,10 @@ class DevicesController extends Controller
             }
 
             $validated = $validator->validated();
+
+            $validated['automatic'] = filter_var($validated['automatic'], FILTER_VALIDATE_BOOLEAN);
+            $validated['heater'] = filter_var($validated['heater'], FILTER_VALIDATE_BOOLEAN);
+            $validated['blower'] = filter_var($validated['blower'], FILTER_VALIDATE_BOOLEAN);
 
             $devices = Devices::where('id', $validated['id'])->first();
 
