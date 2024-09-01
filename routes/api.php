@@ -74,8 +74,4 @@ Route::prefix('/v1')->group(function () {
         Route::get('/info', [DevicesDashboardController::class, 'info'])->middleware(['auth:sanctum', 'abilities:users']);
     });
 
-    Route::prefix('/open-weather-token')->controller(OpenWeatherConfigController::class)->middleware(['auth:sanctum', 'abilities:users'])->group(function() {
-        Route::post('/add', [OpenWeatherConfigController::class, 'add']);
-        Route::get('/info', [OpenWeatherConfigController::class, 'info']);
-    });
 });
