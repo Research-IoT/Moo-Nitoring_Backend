@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use Exception;
 
-use Carbon\Carbon;
-
 use App\Models\Devices;
 use App\Models\Notifications;
 use App\Models\DevicesSensors;
@@ -88,10 +86,12 @@ class DevicesSensorsController extends Controller
             $day = $request->header('day');
             $month = $request->header('month');
             $year = $request->header('year');
+            $devicesId = $request->header('devices_id');
 
             $data = DevicesSensors::where('day', $day)
                                     ->where('month', $month)
                                     ->where('year', $year)
+                                    ->where('devices_id', $devicesId)
                                     ->get();
 
             if($data->isEmpty()) 
@@ -119,11 +119,13 @@ class DevicesSensorsController extends Controller
             $dayEnd = $request->header('dayEnd');
             $month = $request->header('month');
             $year = $request->header('year');
+            $devicesId = $request->header('devices_id');
 
             $data = DevicesSensors::where('day', '>=', $dayStart)
                     ->where('day', '<=', $dayEnd)
                     ->where('month', $month)
                     ->where('year', $year)
+                    ->where('devices_id', $devicesId)
                     ->orderBy('day', 'asc')
                     ->get();
 
@@ -152,9 +154,11 @@ class DevicesSensorsController extends Controller
 
             $month = $request->header('month');
             $year = $request->header('year');
+            $devicesId = $request->header('devices_id');
 
             $data = DevicesSensors::where('month', $month)
                                     ->where('year', $year)
+                                    ->where('devices_id', $devicesId)
                                     ->get();
 
             if($data->isEmpty()) 
