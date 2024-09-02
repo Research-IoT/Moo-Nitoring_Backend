@@ -51,7 +51,7 @@ class DevicesSensorsController extends Controller
 
             $data = $devices->sensor()->create($validated);
 
-            if ($request->input('temperature') > 30) {
+            if ($request->input('temperature') > 37) {
                 FirebaseFCM::withTopic(
                     'Suhu Terlalu Tinggi', 
                     'Menyalakan Blower', 
